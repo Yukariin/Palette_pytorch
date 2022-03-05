@@ -2,7 +2,7 @@ import enum
 import math
 
 import numpy as np
-import torch as th
+import torch
 
 
 def mean_flat(tensor):
