@@ -523,11 +523,13 @@ class InpaintModel(UNetModel):
         super().__init__(image_size, in_channels * 2, *args, **kwargs)
 
     def forward(self, x, timesteps, img, mask=None, **kwargs):
-        x = x * mask + img * (1. - mask)
+        if mask is None:
+            mask = th.ones_like(x_start)
+        #x = x * mask + img * (1. - mask)
         y = img * (1. - mask)
         x = torch.cat([x,y], dim=1)
         out = super().forward(x, timesteps, **kwargs)
-        return out * mask + img * (1. - mask)
+        return out
 
 
 class EMA():

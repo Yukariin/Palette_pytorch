@@ -490,6 +490,7 @@ class GaussianDiffusion:
         model,
         shape,
         noise=None,
+        mask=None, x_0=None,
         clip_denoised=True,
         denoised_fn=None,
         cond_fn=None,
@@ -507,6 +508,7 @@ class GaussianDiffusion:
             model,
             shape,
             noise=noise,
+            mask=mask, x_0=x_0,
             clip_denoised=clip_denoised,
             denoised_fn=denoised_fn,
             cond_fn=cond_fn,
@@ -523,6 +525,7 @@ class GaussianDiffusion:
         model,
         shape,
         noise=None,
+        mask=None, x_0=None,
         clip_denoised=True,
         denoised_fn=None,
         cond_fn=None,
@@ -553,6 +556,12 @@ class GaussianDiffusion:
 
         for i in indices:
             t = th.tensor([i] * shape[0], device=device)
+
+            if mask is not None:
+                assert x_0 is not None
+                img_orig = self.q_sample(x_0, t, noise=noise)
+                img = img_orig * (1. - mask) + img * mask
+
             with th.no_grad():
                 out = self.ddim_sample(
                     model,
@@ -586,6 +595,8 @@ class GaussianDiffusion:
         if mask is None:
             mask = th.ones_like(x_start)
         x_t = self.q_sample(x_start, t, noise=noise)
+        if mask is not None:
+            x_t = x_t*mask + x_start*(1-mask)
 
         terms = {}
 
