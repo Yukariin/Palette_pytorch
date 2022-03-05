@@ -596,8 +596,7 @@ class GaussianDiffusion:
             mask = torch.ones_like(x_start)
         x_t = self.q_sample(x_start, t, noise=noise)
         if mask is not None:
-            #x_t = x_t*mask + x_start*(1-mask)
-            x_t = torch.cat([x_t, x_start*(1-mask), mask], dim=1)
+            x_t = x_t*mask + x_start*(1-mask)
 
         terms = {}
 

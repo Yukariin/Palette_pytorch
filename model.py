@@ -520,14 +520,14 @@ class UNetModel(nn.Module):
 
 class InpaintModel(UNetModel):
     def __init__(self, image_size, in_channels, *args, **kwargs):
-        super().__init__(image_size, in_channels * 2, *args, **kwargs)
+        super().__init__(image_size, in_channels, *args, **kwargs)
 
     def forward(self, x, timesteps, img, mask=None, **kwargs):
         if mask is None:
             mask = th.ones_like(x_start)
         #x = x * mask + img * (1. - mask)
         y = img * (1. - mask)
-        x = torch.cat([x,y], dim=1)
+        x = torch.cat([x, y, mask], dim=1)
         out = super().forward(x, timesteps, **kwargs)
         return out
 
